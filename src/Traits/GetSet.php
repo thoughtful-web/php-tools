@@ -19,6 +19,10 @@ trait GetSet {
 	 * Store the value in this class's properties.
 	 * Can handle static and non-static properties.
 	 *
+	 * @throws \ArgumentCountError Indicate that there weren't enough arguments passed to the
+	 *                             method, since the method will fail at a point where the error
+	 *                             message is somewhat ambiguous as to the root cause of the error.
+	 *
 	 * @param string $prop    The property name to store the value on.
 	 * @param array  ...$args A value to set or append, or a key to use for the next argument which is considered a value.
 	 *

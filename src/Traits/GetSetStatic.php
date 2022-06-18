@@ -18,11 +18,13 @@ trait GetSetStatic {
 	/**
 	 * Store the static property value in this class's properties.
 	 *
-	 * @throws \InvalidArgumentException Ensure the class property exists and the value provided is an acceptable type.
-	 * @throws \ArgumentCountError       Ensure a key or value is passed to the method.
+	 * @throws \ArgumentCountError Indicate that there weren't enough arguments passed to the
+	 *                             method, since the method will fail at a point where the error
+	 *                             message is somewhat ambiguous as to the root cause of the error.
 	 *
 	 * @param string $prop    The property name to store the value on.
-	 * @param array  ...$args A value to set or append, or a key to use for the next argument which is considered a value.
+	 * @param array  ...$args A value to set or append, or a key to use for the next argument which
+	 *                        is considered a value.
 	 *
 	 * @return void
 	 */
