@@ -2,6 +2,48 @@
 /**
  * A PHP trait that provides intuitive getters and setters.
  *
+ * What we're trying to achieve is the following:
+ *
+ * In a static context, this is what happens:
+ *
+ * Class::foo() runs Trait::get( 'foo' )
+ *   1. Trait::get( 'foo' ) returns
+ *      a. Class::$foo if it is defined.
+ *      b. null if not defined.
+ *   2. Class::foo() returns result if not null
+ *   3. else, $value = (custom logic)
+ *   4. Class::foo() uses Trait::set( 'foo', $value ) to store $value
+ *   5. return Class::$foo
+ *
+ * Class::foo( 'bar' ) runs Trait::get( 'foo', 'bar' )
+ *   1. Trait::get( 'foo', 'bar' ) returns
+ *      a. Class::$foo['bar'] if it is defined.
+ *      b. null if not defined.
+ *   2. Class::foo( 'bar' ) returns result if not null
+ *   3. else, $value = (custom logic)
+ *   4. Class::foo( 'bar' ) uses Trait::set( 'foo', 'bar', $value ) to store $value
+ *   5. return Class::$foo['bar']
+ *
+ * In an object context, this is what happens:
+ *
+ * Class->foo() runs Class::foo() runs Trait::get( 'foo' )
+ *   1. Trait::get( 'foo' ) returns
+ *      a. Class->foo if it is defined.
+ *      b. null if not defined.
+ *   2. Class->foo() returns result if not null
+ *   3. else, $value = (custom logic)
+ *   4. Class->foo() uses Trait::set( 'foo', $value ) to store $value
+ *   5. return Class->foo
+ *
+ * Class->foo( 'bar' ) runs Class::foo() runs Trait::get( 'foo', 'bar' )
+ *   1. Trait::get( 'foo', 'bar' ) returns
+ *      a. Class->foo['bar'] if it is defined.
+ *      b. null if not defined.
+ *   2. Class->foo( 'bar' ) returns result if not null
+ *   3. else, $value = (custom logic)
+ *   4. Class->foo( 'bar' ) uses Trait::set( 'foo', 'bar', $value ) to store $value
+ *   5. return Class->foo['bar']
+ *
  * @author    Zachary K. Watkins, zwatkins.it@gmail.com
  * @copyright Zachary K. Watkins, 2022
  * @package   ThoughtfulWeb\Tools
@@ -14,7 +56,7 @@ namespace ThoughtfulWeb\Tools\Traits;
 /**
  * Adds static get and set methods to a class, which means they can only get and set static properties.
  */
-trait GetSetStatic {
+trait GetSetFetch {
 	public function __call( string $name, array $arguments ) {
 		echo $name . PHP_EOL;
 		if ( property_exists( __CLASS__, $name ) ) {
@@ -34,7 +76,7 @@ trait GetSetStatic {
 	 *
 	 * @return void
 	 */
-	protected static function sets( string $prop, ...$args ) {
+	protected static function set( string $prop, ...$args ) {
 		$arg_length = count( $args );
 		if ( 0 === $arg_length ) {
 			throw new \ArgumentCountError( 'Not enough arguments passed to ' . __CLASS__ . '::' . __FUNCTION__ . "(\"{$prop}\")." );
@@ -59,7 +101,7 @@ trait GetSetStatic {
 	 *
 	 * @return mixed
 	 */
-	protected static function gets( string $prop, ...$keys ) {
+	protected static function get( string $prop, ...$keys ) {
 		$key_length = count( $keys );
 		if ( 0 === $key_length ) {
 			return self::$$prop;
