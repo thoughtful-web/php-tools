@@ -1,5 +1,10 @@
 <?php
 /**
+ * A Trait which facilitates model creation and forwards calls to defined but unset properties to their same-name class methods if defined.
+ * Must declare such properties with calculated values as protected.
+ * @package ThoughtfulWeb\Tools\Traits\FactoryMethods
+ */
+/**
  * This trait is designed to simplify how a Class gets, sets, and stores calculated properties. Calculated properties can be expensive and require redundant code to handle detecting existing values, calculating non-existent values, and returning the latest calculated value.
  *
  * The high-level goal is to create class methods as an interface for class properties.
@@ -34,11 +39,69 @@
  *    a. Runs (custom code)
  *    b. Sets $this->is_foo to $value
  *    c. Returns $value
+ *
+ * @author Zachary K. Watkins, zwatkins.it@gmail.com
+ * @package ThoughtfulWeb\Tools
+ * @see https://www.php.net/manual/en/language.oop5.traits.php
  */
-echo memory_get_usage() . ' Before defining trait GetSet' . PHP_EOL;
-trait GetSet {
-	protected static $created = [];
-    public static function __callStatic($name, $arguments)
+
+namespace ThoughtfulWeb\Tools\Traits;
+trait FactoryMethods {
+	protected static $cache = [];
+
+	/**
+	 * Reroute attempts to access unset, protected properties from a public context by executing
+	 * the class's non-static method named as a getter for the property. This facilitates
+	 * simplicity by calculating uncalculated properties automatically.
+	 *
+	 * @param string $key The property key being retrieved.
+	 *
+	 * @return mixed
+	 */
+	public function __get( string $key ) {
+		if ( property_exists( $this, $key ) ) {
+			if ( isset( $this->$key ) ) {
+				echo ' = ' . get_class($this) . '->' . $key;
+				return $this->$key;
+			} else {
+				$key = 'get_' . $key;
+				if ( method_exists( $this, $key ) ) {
+					echo ' = ' . get_class($this) . '->' . $key . '()';
+					return $this->$key();
+				}
+			}
+		}
+	}
+	/**
+	 * Handle attempts to access unset and calculable properties by running the class method which calculates them.
+	 *
+	 * @param string $key
+	 * @param mixed  $value
+	 *
+	 * @return mixed
+	 */
+	public function __set($key, $value) {
+		echo ' [setting ' . $key . ' to ' . $value . '] ';
+		if ( property_exists( $this, $key ) ) {
+			if ( isset( $this->$key ) ) {
+				return $this->$key;
+			} else {
+				$key = 'get_' . $key;
+				if ( method_exists( $this, $key ) ) {
+					return $this->$key();
+				}
+			}
+		}
+	}
+
+	/**
+	 * Magic method callStatic.
+	 *
+	 * @param [type] $name
+	 * @param [type] $arguments
+	 * @return void
+	 */
+    public static function __callStatic( $name, $arguments )
     {
 		echo __LINE__ . PHP_EOL;
 		// $uid = array_shift( $arguments );
@@ -48,7 +111,7 @@ trait GetSet {
         echo "Calling static method '$name' "
              . implode(', ', $arguments). "\n";
     }
-    public function __call($name, $arguments)
+    public function __call( $name, $arguments )
     {
 		echo __LINE__ . PHP_EOL;
         // Note: value of $name is case sensitive.
@@ -64,13 +127,10 @@ trait GetSet {
 	 * @return object
 	 */
 	public static function select( ...$uids ) {
+		$cache_key = static::$_cache ?? 'cache';
 		$results = [];
 		foreach ( $uids as $key ) {
-			if ( isset( self::$created[ $key ] ) ) {
-				$results[ $key ] = self::$created[ $key ];
-			} else {
-				$results[ $key ] = null;
-			}
+			$results[ $key ] = self::$$cache_key[ $key ] ?? null;
 		}
 		return count( $uids ) === 1 ? array_shift( $results ) : $results;
 	}
@@ -95,19 +155,17 @@ trait GetSet {
 	 */
 	public static function selectOrCreate( ...$args ) {
 		$results = [];
-		echo 'Printing args' . PHP_EOL;
-		print_r($args);
 		$args = $args[0];
 		foreach ( $args as $key => $value ) {
 			if ( isset( self::$created[ $key ] ) ) {
 				$results[ $key ] = self::$created[ $key ];
-			} elseif ( is_array( $value ) ) {
-				echo $key . PHP_EOL;
-				print_r($value);
-				print_r(...$value);
-				$results[ $key ] = new static( ...$value );
 			} else {
-				$results[ $key ] = new static( $value );
+				if ( is_array( $value ) ) {
+					$results[ $key ] = new static( ...$value );
+				} else {
+					$results[ $key ] = new static( $value );
+				}
+				self::$created[ $key ] = $results[ $key ];
 			}
 		}
 		return count( $args ) === 1 ? array_shift( $results ) : $results;
