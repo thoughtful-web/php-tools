@@ -1,0 +1,40 @@
+{
+    "name": "thoughtful-web/php-tools",
+    "description": "A library of PHP functions and object-oriented modules that meet common development needs",
+	"homepage": "https://github.com/thoughtful-web/php-tools",
+    "type": "library",
+	"keywords": ["php", "library", "classes", "oop", "traits"],
+	"require": {
+		"php": ">=8.0.0"
+	},
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ThoughtfulWeb\\Tools\\": "src/"
+        }
+    },
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "https://github.com/thoughtful-web/php-tools"
+		}
+	],
+    "authors": [
+        {
+            "name": "Zachary Kendall Watkins",
+            "email": "zwatkins.it@gmail.com",
+			"homepage": "https://github.com/zachwatkins/",
+            "role": "Creator"
+        },
+		{
+			"name"    : "Contributors",
+			"homepage": "https://github.com/thoughtful-web/php-tools/graphs/contributors"
+		}
+    ],
+	"support": {
+		"issues": "https://github.com/thoughtful-web/php-tools/issues",
+		"source": "https://github.com/thoughtful-web/php-tools/",
+		"docs": "https://raw.githubusercontent.com/thoughtful-web/php-tools/main/README.md"
+	},
+	"readme": "README.md"
+}

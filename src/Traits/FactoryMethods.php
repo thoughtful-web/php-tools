@@ -1,8 +1,16 @@
 <?php
 /**
- * A Trait which facilitates model creation and forwards calls to defined but unset properties to their same-name class methods if defined.
+ * A Trait which facilitates model creation and forwards calls to defined but unset properties to
+ * their same-name class methods if defined.
  * Must declare such properties with calculated values as protected.
- * @package ThoughtfulWeb\Tools\Traits\FactoryMethods
+ * php version 8.0.0
+ *
+ * @category  Library
+ * @package   ThoughtfulWeb\Tools
+ * @author    Zachary K. Watkins <zwatkins.it@gmail.com>
+ * @copyright 2022 Zachary K. Watkins
+ * @license   MIT https://spdx.org/licenses/MIT.html
+ * @link      https://github.com/thoughtful-web/tools-php
  */
 /**
  * This trait is designed to simplify how a Class gets, sets, and stores calculated properties. Calculated properties can be expensive and require redundant code to handle detecting existing values, calculating non-existent values, and returning the latest calculated value.
