@@ -1,12 +1,14 @@
 <?php
 /**
  * A PHP trait that provides intuitive getters and setters.
+ * php version 8.0.0
  *
- * @author    Zachary K. Watkins, zwatkins.it@gmail.com
- * @copyright Zachary K. Watkins, 2022
+ * @category  Library
  * @package   ThoughtfulWeb\Tools
- * @see       http://github.com/thoughtful-web/tools/
- * @license   MIT
+ * @author    Zachary K. Watkins <zwatkins.it@gmail.com>
+ * @copyright 2022 Zachary K. Watkins
+ * @license   MIT https://spdx.org/licenses/MIT.html
+ * @link      https://github.com/thoughtful-web/tools-php
  */
 
 namespace ThoughtfulWeb\Tools\Traits;
